@@ -11,6 +11,7 @@ export const env = createEnv({
     CLOUDFLARE_ACCESS_KEY_ID: z.string(),
     CLOUDFLARE_SECRET_ACCESS_KEY: z.string(),
     BUCKET_NAME: z.string(),
+    AUTH_TRUST_HOST: z.boolean(),
   },
   client: {
     NEXT_PUBLIC_BUCKET_URL: z.string().url(),
@@ -27,5 +28,6 @@ export const env = createEnv({
     BUCKET_NAME: process.env.BUCKET_NAME,
     NEXT_PUBLIC_BUCKET_URL: process.env.NEXT_PUBLIC_BUCKET_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    AUTH_TRUST_HOST: process.env.AUTH_TRUST_HOST === "TRUE",
   },
 });
