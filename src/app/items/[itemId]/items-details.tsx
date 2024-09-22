@@ -5,7 +5,6 @@ import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Item } from "@/db/schema";
-import supabaseClient from "@/db/supabase-client";
 import { getImageUrl } from "@/lib/utils";
 import { BidHistoryItem } from "@/queries/bids";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,7 +12,6 @@ import { Clock, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
 import { BidHistory } from "./bid-history";
 
 export const ItemsDetails = () => {

@@ -1,5 +1,3 @@
-import { queryClient } from "@/client-query";
-import { QueryClientProvider } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";

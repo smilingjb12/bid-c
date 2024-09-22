@@ -1,12 +1,10 @@
 import { auth } from "@/auth";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
-import { db } from "@/db/database";
-import { items } from "@/db/schema";
+import { getItems } from "@/queries/items";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { ItemCard } from "./item-card";
-import { getItems } from "@/queries/items";
 
 export default async function Home() {
   const session = await auth();

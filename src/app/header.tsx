@@ -1,8 +1,7 @@
 import { auth } from "@/auth";
 import { SignIn } from "@/components/sign-in";
 import { SignOut } from "@/components/sign-out";
-import { Button } from "@/components/ui/button";
-import { LogOut, Package } from "lucide-react";
+import { Package } from "lucide-react";
 import Link from "next/link";
 
 export default async function Header() {

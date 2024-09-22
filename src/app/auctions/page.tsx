@@ -2,10 +2,7 @@ import { auth } from "@/auth";
 import { EmptyState } from "@/components/empty-state";
 import { Heading } from "@/components/heading";
 import { Button } from "@/components/ui/button";
-import { db } from "@/db/database";
-import { items } from "@/db/schema";
 import { getUserItems } from "@/queries/items";
-import { eq } from "drizzle-orm";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 
