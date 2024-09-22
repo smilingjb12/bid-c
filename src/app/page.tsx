@@ -34,7 +34,8 @@ export default async function Home() {
             <ItemCard
               key={item.id}
               item={item}
-              canPlaceBid={!!session?.user?.id}
+              canView={!!session?.user?.id}
+              canPlaceBid={item.userId !== session?.user?.id}
             />
           ))}
         </div>

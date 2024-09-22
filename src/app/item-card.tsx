@@ -7,9 +7,11 @@ import Link from "next/link";
 export const ItemCard = ({
   item,
   canPlaceBid,
+  canView,
 }: {
   item: Item;
   canPlaceBid: boolean;
+  canView: boolean;
 }) => {
   return (
     <div
@@ -29,13 +31,19 @@ export const ItemCard = ({
           />
         </div>
       </div>
-      {canPlaceBid && (
-        <div className="p-4 bg-gray-50">
-          <Button asChild variant="default" className="w-full">
-            <Link href={`/items/${item.id}`}>Place Bid</Link>
+      <div className="p-4 bg-gray-50">
+        {canView ?? (
+          <Button
+            asChild
+            variant={canPlaceBid ? "default" : "outline"}
+            className="w-full"
+          >
+            <Link href={`/items/${item.id}`}>
+              {canPlaceBid ? "Place Bid" : "View"}
+            </Link>
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
