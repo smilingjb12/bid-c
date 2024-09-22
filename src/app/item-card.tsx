@@ -14,30 +14,21 @@ export const ItemCard = ({
   canView: boolean;
 }) => {
   return (
-    <div
-      key={item.id}
-      className="flex flex-col w-full max-w-sm bg-white rounded-lg shadow-md overflow-hidden"
-    >
-      <div className="p-4 flex-grow flex flex-col">
-        <h2 className="text-xl font-semibold mb-2">{item.name}</h2>
-        <p className="text-gray-600 mb-4">${item.currentPrice}</p>
-        <div className="flex-grow flex items-center justify-center mb-4">
-          <Image
-            src={getImageUrl(item.fileKey)}
-            alt={item.name}
-            width={200}
-            height={200}
-            className="object-cover"
-          />
-        </div>
+    <div className="relative group overflow-hidden rounded-lg shadow-lg">
+      <Image
+        src={getImageUrl(item.fileKey)}
+        alt={item.name}
+        width={400}
+        height={400}
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+      />
+      <div className="absolute inset-x-0 top-0 bg-black bg-opacity-60 p-4">
+        <h2 className="text-xl font-bold text-white">{item.name}</h2>
       </div>
-      <div className="p-4 bg-gray-50">
-        {canView ?? (
-          <Button
-            asChild
-            variant={canPlaceBid ? "default" : "outline"}
-            className="w-full"
-          >
+      <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-60 p-4 flex justify-between items-center">
+        <p className="text-lg font-semibold text-white">${item.currentPrice}</p>
+        {canView && (
+          <Button asChild variant="secondary" className="">
             <Link href={`/items/${item.id}`}>
               {canPlaceBid ? "Place Bid" : "View"}
             </Link>
