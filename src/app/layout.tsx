@@ -1,9 +1,10 @@
+import { queryClient } from "@/client-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import type { Metadata } from "next";
+import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "./header";
-import { auth } from "@/auth";
-import { SessionProvider } from "next-auth/react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,7 +27,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
   return (
     <html lang="en">
       <body
@@ -34,7 +34,7 @@ export default async function RootLayout({
       >
         <Header />
         <main className="container py-2 px-8 mx-auto">
-          <SessionProvider>{children} </SessionProvider>
+          <SessionProvider>{children}</SessionProvider>
         </main>
       </body>
     </html>

@@ -1,77 +1,61 @@
 "use client";
 
 import { Hint } from "@/components/hint";
+import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Item } from "@/db/schema";
 import supabaseClient from "@/db/supabase-client";
 import { getImageUrl } from "@/lib/utils";
 import { BidHistoryItem } from "@/queries/bids";
-import { Clock } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Clock, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
-import { createBidAction } from "./actions";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 import { BidHistory } from "./bid-history";
 
-export const ItemsDetails = ({
-  item: initialItem,
-  bids: initialBids,
-}: {
-  item: Item;
-  bids: BidHistoryItem[];
-}) => {
-  const [item, setItem] = useState(initialItem);
-  const [bids, setBids] = useState([]);
+export const ItemsDetails = () => {
+  const params = useParams();
+  const itemId = params.itemId as string;
+  const queryClient = useQueryClient();
   const session = useSession();
+  const { data: item, isLoading: isItemLoading } = useQuery<Item>({
+    queryKey: ["items"],
+    queryFn: () => fetch(`/api/items/${itemId}`).then((res) => res.json()),
+  });
+  const { data: bids, isLoading: isBidsLoading } = useQuery<BidHistoryItem[]>({
+    queryKey: ["bids"],
+    queryFn: () =>
+      fetch(`/api/bids/history/${itemId}`).then((res) => res.json()),
+  });
+  const createBidMutation = useMutation({
+    mutationFn: () =>
+      fetch(`/api/bids/create?itemId=${itemId}`, {
+        method: "POST",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey.includes("bids") || query.queryKey.includes("items"),
+      });
+    },
+  });
+
   const canPlaceBid = session?.data?.user?.id !== item?.userId;
-  const priceAfterBid = Number(item.currentPrice) + Number(item.bidInterval);
+  const priceAfterBid = item
+    ? Number(item.currentPrice) + Number(item.bidInterval)
+    : 0;
 
-  const fetchBidHistory = useCallback(() => {
-    const fetchBidHistory = async () => {
-      const response = await fetch(`/api/bids/history/${item.id}`);
-      const bidHistory = await response.json();
-      setBids(bidHistory);
-    };
+  const createBid = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    createBidMutation.mutate();
+  };
 
-    fetchBidHistory();
-  }, [item.id]);
-
-  const fetchItem = useCallback(() => {
-    const fetchItem = async () => {
-      const response = await fetch(`/api/items/${item.id}`);
-      const reponse = await response.json();
-      setItem(reponse);
-    };
-
-    fetchItem();
-  }, [item.id]);
-
-  useEffect(() => {
-    const channel = supabaseClient
-      .channel("bids")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "bids",
-        },
-        () => {
-          fetchBidHistory();
-          fetchItem();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabaseClient.removeChannel(channel);
-    };
-  }, [fetchBidHistory, fetchItem]);
-
-  useEffect(() => {
-    fetchBidHistory();
-  }, [fetchBidHistory]);
+  if (isItemLoading || !item || item.id !== Number(itemId)) {
+    return <Loader />;
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -81,13 +65,13 @@ export const ItemsDetails = ({
             <CardTitle className="text-2xl font-bold">{item.name}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-6 md:grid-cols-2">
-            <div className="flex items-start justify-center">
+            <div className="flex items-center justify-center relative w-full h-[400px]">
               <Image
                 src={getImageUrl(item.fileKey)}
                 alt={item.name}
-                width={400}
-                height={400}
-                className="max-w-full max-h-[700px] w-auto h-auto object-contain rounded-lg"
+                fill
+                style={{ objectFit: "contain" }}
+                className="rounded-lg"
               />
             </div>
             <div className="space-y-4">
@@ -114,21 +98,24 @@ export const ItemsDetails = ({
                 <Clock className="w-5 h-5" />
                 <span>2 days, 5 hours remaining</span>
               </div>
-              <form
-                action={createBidAction.bind(null, item.id)}
-                className="space-y-2 pb-4"
-              >
+              <form onSubmit={(e) => createBid(e)} className="space-y-2 pb-4">
                 <div className="flex space-x-2">
                   <Hint label="Can't bind on your own items" side="bottom">
                     <div>
-                      <Button type="submit" disabled={!canPlaceBid}>
+                      <Button
+                        type="submit"
+                        disabled={!canPlaceBid || createBidMutation.isPending}
+                      >
+                        {createBidMutation.isPending && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
                         Place Bid (${priceAfterBid})
                       </Button>
                     </div>
                   </Hint>
                 </div>
               </form>
-              <BidHistory bids={bids} />
+              {!isBidsLoading && <BidHistory bids={bids!} />}
             </div>
           </CardContent>
         </Card>

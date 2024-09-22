@@ -2,14 +2,13 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  TableHeader,
-  TableRow,
-  TableHead,
+  Table,
   TableBody,
   TableCell,
-  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { Bid } from "@/db/schema";
 import { BidHistoryItem } from "@/queries/bids";
 import { formatDistance } from "date-fns";
 import { useEffect, useState } from "react";
