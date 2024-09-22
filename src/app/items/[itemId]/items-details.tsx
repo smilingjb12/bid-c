@@ -1,18 +1,18 @@
 "use client";
 
+import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Item } from "@/db/schema";
-import { Clock } from "lucide-react";
-import { createBidAction } from "./actions";
-import { BidHistory } from "./bid-history";
+import supabaseClient from "@/db/supabase-client";
+import { getImageUrl } from "@/lib/utils";
 import { BidHistoryItem } from "@/queries/bids";
+import { Clock } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { getImageUrl } from "@/lib/utils";
-import { Hint } from "@/components/hint";
 import { useCallback, useEffect, useState } from "react";
-import supabaseClient from "@/db/supabase-client";
+import { createBidAction } from "./actions";
+import { BidHistory } from "./bid-history";
 
 export const ItemsDetails = ({
   item: initialItem,
