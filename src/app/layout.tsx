@@ -3,6 +3,8 @@ import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "./header";
+import { Suspense } from "react";
+import { Loader } from "lucide-react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,7 +34,9 @@ export default async function RootLayout({
       >
         <Header />
         <main className="container py-2 px-8 mx-auto">
-          <SessionProvider>{children}</SessionProvider>
+          <SessionProvider>
+            <Suspense fallback={<Loader />}>{children}</Suspense>
+          </SessionProvider>
         </main>
       </body>
     </html>

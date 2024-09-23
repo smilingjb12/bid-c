@@ -3,16 +3,26 @@
 import { Hint } from "@/components/hint";
 import Loader from "@/components/loader";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Item } from "@/db/schema";
 import { getImageUrl } from "@/lib/utils";
 import { BidHistoryItem } from "@/queries/bids";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatDistance } from "date-fns";
 import { Clock, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { BidHistory } from "./bid-history";
+function formatDate(date: Date) {
+  return formatDistance(date, new Date(), { addSuffix: true });
+}
 
 export const ItemsDetails = () => {
   const params = useParams();
@@ -23,7 +33,7 @@ export const ItemsDetails = () => {
     queryKey: ["items"],
     queryFn: () => fetch(`/api/items/${itemId}`).then((res) => res.json()),
   });
-  const { data: bids, isLoading: isBidsLoading } = useQuery<BidHistoryItem[]>({
+  const { data: bids } = useQuery<BidHistoryItem[]>({
     queryKey: ["bids"],
     queryFn: () =>
       fetch(`/api/bids/history/${itemId}`).then((res) => res.json()),
@@ -56,67 +66,75 @@ export const ItemsDetails = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col lg:flex-row gap-6">
-        <Card className="w-full">
-          <CardHeader className="pb-2 pt-2 pl-12">
-            <CardTitle className="text-2xl font-bold">{item.name}</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-6 md:grid-cols-2">
-            <div className="flex items-center justify-center relative w-full h-[400px]">
-              <Image
-                src={getImageUrl(item.fileKey)}
-                alt={item.name}
-                fill
-                style={{ objectFit: "contain" }}
-                className="rounded-lg"
-              />
+    <div className="container mx-auto px-4 py-8 max-w-screen-lg">
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* Left Column */}
+        <div>
+          <div className="relative aspect-[4/3] mb-4">
+            <Image
+              src={getImageUrl(item.fileKey)}
+              alt="Auction Item"
+              fill
+              className="rounded-lg shadow-lg object-cover"
+            />
+            <div className="absolute top-4 left-4 bg-black bg-opacity-70 text-white p-4 rounded-lg">
+              <p className="text-lg font-semibold">Current bid</p>
+              <p className="text-3xl font-bold">${item.currentPrice}</p>
             </div>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold">Current Bid</h3>
-                <p className="text-3xl font-bold">${item.currentPrice}</p>
+          </div>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-muted p-4 rounded-lg">
+                <p className="text-sm font-semibold">Starting Price</p>
+                <p className="text-xl font-bold">${item.startingPrice}</p>
               </div>
-              <div className="flex flex-row space-x-8">
-                <div>
-                  <h3 className="text-lg font-semibold">Starting Price</h3>
-                  <p className="text-xl">${item.startingPrice}</p>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-muted-foreground">
-                    Bid Increment
-                  </h3>
-                  <p className="text-xl text-muted-foreground">
-                    ${item.bidInterval}
-                  </p>
-                </div>
+              <div className="bg-muted p-4 rounded-lg">
+                <p className="text-sm font-semibold">Bid Increment</p>
+                <p className="text-xl font-bold">${item.bidInterval}</p>
               </div>
-
-              <div className="flex items-center space-x-2">
-                <Clock className="w-5 h-5" />
-                <span>2 days, 5 hours remaining</span>
-              </div>
-              <form onSubmit={(e) => createBid(e)} className="space-y-2 pb-4">
-                <div className="flex space-x-2">
-                  <Hint label="Can't bind on your own items" side="bottom">
-                    <div>
-                      <Button
-                        type="submit"
-                        disabled={!canPlaceBid || createBidMutation.isPending}
-                      >
-                        {createBidMutation.isPending && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Place Bid (${priceAfterBid})
-                      </Button>
-                    </div>
-                  </Hint>
-                </div>
+            </div>
+            <div className="flex items-center space-x-2 text-sm bg-muted p-4 rounded-lg">
+              <Clock className="w-5 h-5" />
+              <span>2 days, 5 hours remaining</span>
+            </div>
+            <Hint label="Can't bind on your own items" side="right">
+              <form onSubmit={createBid}>
+                <Button
+                  className="w-full"
+                  type="submit"
+                  disabled={!canPlaceBid || createBidMutation.isPending}
+                >
+                  {createBidMutation.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Place Bid (${priceAfterBid})
+                </Button>
               </form>
-              {!isBidsLoading && <BidHistory bids={bids!} />}
-            </div>
-          </CardContent>
-        </Card>
+            </Hint>
+          </div>
+        </div>
+        {/* Right Column */}
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Bid History</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Bidder</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>When</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {bids?.map((b) => (
+                <TableRow key={b.id}>
+                  <TableCell>{b.userName}</TableCell>
+                  <TableCell>${b.amount}</TableCell>
+                  <TableCell>{formatDate(new Date(b.timestamp))}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );
