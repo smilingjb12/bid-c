@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "./header";
 import { Suspense } from "react";
 import { Loader } from "lucide-react";
+import { Inter } from "next/font/google";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -15,6 +16,10 @@ const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -29,9 +34,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full pt-16`}
-      >
+      <body className={`${inter.className} antialiased h-full pt-16`}>
         <Header />
         <main className="container py-2 px-8 mx-auto">
           <SessionProvider>
