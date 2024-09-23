@@ -1,22 +1,10 @@
+import { Loader } from "lucide-react";
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import Header from "./header";
-import { Suspense } from "react";
-import { Loader } from "lucide-react";
-import { Inter } from "next/font/google";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 const inter = Inter({
   subsets: ["latin"],
