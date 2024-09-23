@@ -1,14 +1,13 @@
 import { auth } from "@/auth";
 import { EmptyState } from "@/components/empty-state";
-import { Heading } from "@/components/heading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserItems } from "@/queries/items";
 import { ClockIcon, DollarSignIcon, PlusCircle } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { getImageUrl } from "../../lib/utils";
-import Image from "next/image";
 
 export default async function Auctions() {
   const session = await auth();
