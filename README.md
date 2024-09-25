@@ -1,3 +1,3 @@
-NextJS + Drizzle ORM (PostgreSQL) + Shadcn + Clousflare R2.
+NextJS + Drizzle ORM (PostgreSQL) + Shadcn + Cloudflare R2.
 
 https://bid-c-production.up.railway.app/
