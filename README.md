@@ -4,4 +4,3 @@
 - Cloudflare R2.
 - Next Auth.
 
-https://bid-c-production.up.railway.app/
