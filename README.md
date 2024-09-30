@@ -1,1 +1,6 @@
-https://bid-c-production.up.railway.app/
+- NextJS.
+- Drizzle ORM (PostgreSQL).
+- Shadcn.
+- Cloudflare R2.
+- Next Auth.
+
